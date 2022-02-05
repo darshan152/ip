@@ -4,10 +4,6 @@ package duke;
  * Represents tasks that user enters into the app
  */
 public class Task {
-
-    static final int COMPLETED_INDEX = 1;
-    static final int DESCRIPTION_INDEX = 2;
-
     /**
      * String description of task to be completed
      */
@@ -54,8 +50,8 @@ public class Task {
      */
     public String[] getDetails() {
         String[] details = new String[4];
-        details[COMPLETED_INDEX] = isCompleted ? "1" : "0";
-        details[DESCRIPTION_INDEX] = description;
+        details[1] = isCompleted ? "1" : "0";
+        details[2] = description;
         return details;
 
     }

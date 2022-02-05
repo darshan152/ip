@@ -6,19 +6,9 @@ import java.util.ArrayList;
  * Represent list of tasks entered by user
  */
 public class TaskList {
-
-    static final int TASK_INDEX = 0;
-    static final int COMPLETED_INDEX = 1;
-    static final int DESCRIPTION_INDEX = 2;
-    static final int TIME_INDEX = 3;
-
-    static final int USER_DESCRIPTION_INDEX = 0;
-    static final int USER_TIME_INDEX = 1;
-
-    static final String COMPLETED_STRING = "1";
-
-    static final int INDEX_CORRECTION = 1;
-
+    /**
+     * Arraylist of Tasks
+     */
     private final ArrayList<Task> tasks = new ArrayList<>();
 
     /**
@@ -30,26 +20,26 @@ public class TaskList {
      * @throws EmptyDescriptionException if description is empty
      */
     public boolean addTask(TaskType type, String[] inputs) throws EmptyDescriptionException {
-        if (inputs[USER_DESCRIPTION_INDEX].trim().equals("")) {
+        if (inputs[0].trim().equals("")) {
             throw new EmptyDescriptionException("Description of task can't be empty");
         }
 
         boolean isAddSuccess;
         switch (type) {
         case TODO :
-            isAddSuccess = tasks.add(new ToDo(inputs[USER_DESCRIPTION_INDEX]));
+            isAddSuccess = tasks.add(new ToDo(inputs[0]));
             break;
         case DEADLINE:
-            if (inputs[USER_TIME_INDEX].trim().equals("")) {
+            if (inputs[1].trim().equals("")) {
                 throw new EmptyDescriptionException("Time cant be empty");
             }
-            isAddSuccess = tasks.add(new Deadline(inputs[USER_DESCRIPTION_INDEX], inputs[USER_TIME_INDEX]));
+            isAddSuccess = tasks.add(new Deadline(inputs[0], inputs[1]));
             break;
         case EVENT:
-            if (inputs[USER_TIME_INDEX].trim().equals("")) {
+            if (inputs[1].trim().equals("")) {
                 throw new EmptyDescriptionException("Time cant be empty");
             }
-            isAddSuccess = tasks.add(new Event(inputs[USER_DESCRIPTION_INDEX], inputs[USER_TIME_INDEX]));
+            isAddSuccess = tasks.add(new Event(inputs[0], inputs[1]));
             break;
         default:
             isAddSuccess = false;
@@ -62,33 +52,28 @@ public class TaskList {
     /**
      * Adds Task to the list
      *
-     * @param input Comma separated input values
+     * @param type TaskType of task to be added
+     * @param inputs Parsed input array
      */
-    public void loadTask(String input) {
-        String[] inputs = input.split(",");
-        TaskType type = Parser.parseTaskType(inputs[TASK_INDEX]);
-
-        assert type != null : "Task type cannot be null";
-
-        Task task;
+    public void loadTasks(TaskType type, String[] inputs) {
+        Task task = null;
         switch (type) {
         case TODO :
-            task = new ToDo(inputs[DESCRIPTION_INDEX]);
+            task = new ToDo(inputs[1]);
             break;
         case DEADLINE:
-            task = new Deadline(inputs[DESCRIPTION_INDEX], inputs[TIME_INDEX]);
+            task = new Deadline(inputs[1], inputs[2]);
             break;
         case EVENT:
-            task = new Event(inputs[DESCRIPTION_INDEX], inputs[TIME_INDEX]);
+            task = new Event(inputs[1], inputs[2]);
             break;
         default:
-            task = null;
             break;
         }
 
         assert task != null : "Task cannot be null";
 
-        if (inputs[COMPLETED_INDEX].equals(COMPLETED_STRING)) {
+        if (inputs[0].equals("1")) {
             task.markCompleted();
         } else {
             task.markIncompleted();
@@ -107,7 +92,7 @@ public class TaskList {
 
         for (int i = 0; i < tasks.size(); i++) {
 
-            description = description + (i + INDEX_CORRECTION);
+            description = description + (i + 1);
             description = description + ".";
             description = description + tasks.get(i).toString();
         }
@@ -115,7 +100,7 @@ public class TaskList {
     }
 
     public String toString(int index) {
-        return tasks.get(index - INDEX_CORRECTION).toString();
+        return tasks.get(index - 1).toString();
     }
 
     /**
@@ -124,7 +109,7 @@ public class TaskList {
      * @param index Task index to be marked as complete
      */
     public void markComplete(int index) {
-        this.tasks.get(index - INDEX_CORRECTION).markCompleted();
+        this.tasks.get(index - 1).markCompleted();
     }
 
     /**
@@ -133,7 +118,7 @@ public class TaskList {
      * @param index Task index to be marked as incomplete
      */
     public void markIncomplete(int index) {
-        this.tasks.get(index - INDEX_CORRECTION).markIncompleted();
+        this.tasks.get(index - 1).markIncompleted();
     }
 
     /**
@@ -151,7 +136,7 @@ public class TaskList {
      * @param i index of task to be deleted
      */
     public void deleteTask(int i) {
-        tasks.remove(i - INDEX_CORRECTION);
+        tasks.remove(i - 1);
     }
 
     /**
@@ -161,7 +146,7 @@ public class TaskList {
      * @return task at index i
      */
     public Task getTask(int i) {
-        return tasks.get(i - INDEX_CORRECTION);
+        return tasks.get(i - 1);
     }
 
     /**
@@ -174,9 +159,8 @@ public class TaskList {
         int numOfTasks = 0;
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
-            System.out.println(task.getDetails()[DESCRIPTION_INDEX]);
-            if (task.getDetails()[DESCRIPTION_INDEX].contains(search)) {
-                output = output + (i + INDEX_CORRECTION);
+            if (task.getDetails()[2].contains(search)) {
+                output = output + (i + 1);
                 output = output + ".";
                 output = output + task;
                 numOfTasks++;

@@ -2,14 +2,12 @@ package duke;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Represents task of type event
  */
 public class Event extends Task {
-
-    static final int TASK_INDEX = 0;
-    static final int TIME_INDEX = 3;
 
     /**
      * String of time indicating when task is occurring
@@ -30,9 +28,27 @@ public class Event extends Task {
     Event(String description, String time) {
         super(description);
         this.time = time;
-        datetime = Parser.parseTime(time);
+        try {
+            datetime = LocalDateTime.parse(time);
+        } catch (DateTimeParseException e) {
+            datetime = null;
+        }
     }
 
+    /**
+     * Prints details of Event
+     */
+    public void print() {
+        System.out.print("[E]");
+        System.out.print("[" + (this.isCompleted ? "x" : " ") + "] " + this.description);
+        if (datetime == null) {
+            System.out.println(" (at: " + this.time + ")");
+        } else {
+            System.out.println(" (at: " + this.datetime.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm a"))
+                    + ")");
+        }
+
+    }
 
     @Override
     public String toString() {
@@ -59,8 +75,8 @@ public class Event extends Task {
     @Override
     public String[] getDetails() {
         String[] details = super.getDetails();
-        details[TASK_INDEX] = TaskType.EVENT.toString();
-        details[TIME_INDEX] = time;
+        details[0] = TaskType.EVENT.toString();
+        details[3] = time;
         return details;
     }
 }
